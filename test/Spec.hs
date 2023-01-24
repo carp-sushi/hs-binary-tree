@@ -67,8 +67,7 @@ spec_basic_ops =
       max_ tree `shouldBe` Just 9
       max_ nilTree `shouldBe` Nothing
     it "invert" $ do
-      invert tree `shouldBe` inverted
-      invert (invert tree) `shouldBe` tree
+      invert tree `shouldBe` Inverted inverted
     it "to list" $ do
       toList tree `shouldBe` numbers
 

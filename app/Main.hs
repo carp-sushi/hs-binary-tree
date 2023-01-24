@@ -6,7 +6,7 @@ main :: IO ()
 main = do
   let numbers = [4, 2, 1, 3, 7, 6, 9]
       tree = mkTree numbers
-      inverted = invert tree
+      (Inverted inverted) = invert tree
 
   putStrLn "Numbers"
   print numbers

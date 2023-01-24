@@ -2,6 +2,7 @@
 
 module Data.Tree (
   Tree (..),
+  Inverted (..),
   insert,
   invert,
   max_,
@@ -22,6 +23,14 @@ data Tree a
   | Node a (Tree a) (Tree a)
   deriving
     (Eq, Ord, Show, Foldable, Functor, Traversable)
+
+{- | An inverted tree that  indicates most basic tree operations will not work
+   | correctly on the internal inverted tree.
+-}
+newtype Inverted a
+  = Inverted (Tree a)
+  deriving
+    (Eq, Ord, Show)
 
 -- | Combine two trees (requires semigroup defined on element type).
 instance Semigroup a => Semigroup (Tree a) where
@@ -110,24 +119,22 @@ remove x (Node y t1 t2) =
 -- | Find the deepest left value of a tree.
 min_ :: Ord a => Tree a -> Maybe a
 min_ Nil = Nothing
-min_ (Node x t1 _) =
-  if t1 == Nil
-    then Just x
-    else min_ t1
+min_ (Node x Nil _) = Just x
+min_ (Node _ t1 _) = min_ t1
 
 -- | Find the deepest right value of a tree.
 max_ :: Ord a => Tree a -> Maybe a
 max_ Nil = Nothing
-max_ (Node x _ t2) =
-  if t2 == Nil
-    then Just x
-    else max_ t2
+max_ (Node x _ Nil) = Just x
+max_ (Node _ _ t2) = max_ t2
 
--- | Invert a tree
-invert :: Tree a -> Tree a
-invert Nil = Nil
-invert (Node x t1 t2) =
-  Node x (invert t2) (invert t1)
+-- | Invert a tree.
+invert :: Tree a -> Inverted a
+invert = Inverted . invert'
+  where
+    invert' Nil = Nil
+    invert' (Node x t1 t2) =
+      Node x (invert' t2) (invert' t1)
 
 -- | Create a list from a tree (depth first).
 toList :: Tree a -> [a]
