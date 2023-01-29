@@ -24,7 +24,7 @@ data Tree a
   deriving
     (Eq, Ord, Show, Foldable, Functor, Traversable)
 
-{- | An inverted tree that  indicates most basic tree operations will not work
+{- | A wrapper type that indicates most basic tree operations will not work
    | correctly on the internal inverted tree.
 -}
 newtype Inverted a
