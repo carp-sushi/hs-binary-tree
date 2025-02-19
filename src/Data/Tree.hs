@@ -33,7 +33,7 @@ newtype Inverted a
     (Eq, Ord, Show)
 
 -- | Combine two trees (requires semigroup defined on element type).
-instance Semigroup a => Semigroup (Tree a) where
+instance (Semigroup a) => Semigroup (Tree a) where
   (<>) Nil Nil = Nil
   (<>) t1 Nil = t1
   (<>) Nil t2 = t2
@@ -41,7 +41,7 @@ instance Semigroup a => Semigroup (Tree a) where
     Node (x <> y) (ta <> tc) (tb <> td)
 
 -- | Define an empty tree
-instance Semigroup a => Monoid (Tree a) where
+instance (Semigroup a) => Monoid (Tree a) where
   mempty = Nil
 
 -- | Define applicative for tree.
@@ -69,7 +69,7 @@ instance Monad Tree where
       orElse t _ = t
 
 -- | Build a tree from a foldable.
-mkTree :: Foldable f => Ord a => f a -> Tree a
+mkTree :: (Foldable f) => (Ord a) => f a -> Tree a
 mkTree =
   foldl (+>) Nil
 
@@ -77,18 +77,18 @@ mkTree =
 infixr 5 <+
 
 -- | Insert alias
-(<+) :: Ord a => a -> Tree a -> Tree a
+(<+) :: (Ord a) => a -> Tree a -> Tree a
 (<+) = insert
 
 -- | Insert left infix operator
 infixl 5 +>
 
 -- | Insert alias
-(+>) :: Ord a => Tree a -> a -> Tree a
+(+>) :: (Ord a) => Tree a -> a -> Tree a
 (+>) = flip insert
 
 -- | Add an element to a tree
-insert :: Ord a => a -> Tree a -> Tree a
+insert :: (Ord a) => a -> Tree a -> Tree a
 insert x Nil = pure x
 insert x n@(Node y t1 t2) =
   case compare x y of
@@ -97,7 +97,7 @@ insert x n@(Node y t1 t2) =
     LT -> Node y (insert x t1) t2
 
 -- | Search for the sub-tree with the given root element
-search :: Ord a => a -> Tree a -> Tree a
+search :: (Ord a) => a -> Tree a -> Tree a
 search _ Nil = Nil
 search x n@(Node y t1 t2) =
   case compare x y of
@@ -106,7 +106,7 @@ search x n@(Node y t1 t2) =
     GT -> search x t2
 
 -- | Remove an element from a tree.
-remove :: Ord a => a -> Tree a -> Tree a
+remove :: (Ord a) => a -> Tree a -> Tree a
 remove _ Nil = Nil
 remove x (Node y t1 t2) =
   case compare x y of
@@ -117,13 +117,13 @@ remove x (Node y t1 t2) =
       Nothing -> t1
 
 -- | Find the deepest left value of a tree.
-min_ :: Ord a => Tree a -> Maybe a
+min_ :: (Ord a) => Tree a -> Maybe a
 min_ Nil = Nothing
 min_ (Node x Nil _) = Just x
 min_ (Node _ t1 _) = min_ t1
 
 -- | Find the deepest right value of a tree.
-max_ :: Ord a => Tree a -> Maybe a
+max_ :: (Ord a) => Tree a -> Maybe a
 max_ Nil = Nothing
 max_ (Node x _ Nil) = Just x
 max_ (Node _ _ t2) = max_ t2
