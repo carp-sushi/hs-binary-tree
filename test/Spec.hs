@@ -68,8 +68,8 @@ spec_basic_ops =
       max_ nilTree `shouldBe` Nothing
     it "invert" $ do
       invert tree `shouldBe` Inverted inverted
-    it "to list" $ do
-      toList tree `shouldBe` numbers
+    it "flatten" $ do
+      flatten tree `shouldBe` numbers
 
 -- Specs for functor laws
 spec_functor_laws :: Spec
@@ -101,12 +101,12 @@ spec_applicative_laws =
           h = tree
       (pure (.) <*> f <*> g <*> h) `shouldBe` f <*> (g <*> h)
     it "homomorphism" $ do
-      let f = toList
+      let f = flatten
           puref = pure f :: Tree (Tree Int -> [Int])
           x = tree
       puref <*> pure x `shouldBe` (pure (f x) :: Tree [Int])
     it "interchange" $ do
-      let u = pure toList :: Tree (Tree Int -> [Int])
+      let u = pure flatten :: Tree (Tree Int -> [Int])
           y = tree
       u <*> pure y `shouldBe` pure ($ y) <*> u
 
@@ -123,7 +123,7 @@ spec_monad_laws =
       let f = pure (+ 1)
       (f <*> x) `shouldBe` (f >>= \f' -> fmap f' x)
     it "left identity" $ do
-      let f = toList
+      let f = flatten
       (pure x >>= f) `shouldBe` f x
     it "right identity" $ do
       (x >>= pure) `shouldBe` x

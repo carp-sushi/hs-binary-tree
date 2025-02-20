@@ -20,7 +20,7 @@ main = do
   putStrLn "Inverted Tree"
   print inverted
   putStrLn "Inverted As List"
-  print $ toList inverted
+  print $ flatten inverted
 
   putStrLn "Insert 5, 8"
   print $ (insert 8 . insert 5) tree

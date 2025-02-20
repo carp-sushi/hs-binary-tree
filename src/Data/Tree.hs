@@ -10,7 +10,7 @@ module Data.Tree (
   mkTree,
   remove,
   search,
-  toList,
+  flatten,
   (+>),
   (<+),
 ) where
@@ -137,7 +137,7 @@ invert = Inverted . invert'
       Node x (invert' t2) (invert' t1)
 
 -- | Create a list from a tree (depth first).
-toList :: Tree a -> [a]
-toList Nil = []
-toList (Node x t1 t2) =
-  [x] <> toList t1 <> toList t2
+flatten :: Tree a -> [a]
+flatten Nil = []
+flatten (Node x t1 t2) =
+  [x] <> flatten t1 <> flatten t2
