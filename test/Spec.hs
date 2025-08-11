@@ -70,6 +70,8 @@ spec_basic_ops =
       invert tree `shouldBe` Inverted inverted
     it "flatten" $ do
       flatten tree `shouldBe` numbers
+    it "height" $ do
+      height tree `shouldBe` 2
 
 -- Specs for functor laws
 spec_functor_laws :: Spec

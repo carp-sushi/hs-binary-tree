@@ -11,6 +11,7 @@ module Data.Tree (
   remove,
   search,
   flatten,
+  height,
   (+>),
   (<+),
 ) where
@@ -22,15 +23,19 @@ data Tree a
   = Nil
   | Node a (Tree a) (Tree a)
   deriving
-    (Eq, Ord, Show, Foldable, Functor, Traversable)
+    ( Eq
+    , Ord
+    , Show
+    , Foldable
+    , Functor
+    , Traversable
+    )
 
 {- | A wrapper type that indicates most basic tree operations will not work
    | correctly on the internal inverted tree.
 -}
-newtype Inverted a
-  = Inverted (Tree a)
-  deriving
-    (Eq, Ord, Show)
+newtype Inverted a = Inverted (Tree a)
+  deriving (Eq, Ord, Show)
 
 -- | Combine two trees (requires semigroup defined on element type).
 instance (Semigroup a) => Semigroup (Tree a) where
@@ -58,15 +63,12 @@ instance Applicative Tree where
 -- | Define bind on tree.
 instance Monad Tree where
   (>>=) Nil _ = Nil
-  (>>=) (Node x t1 t2) f = go $ f x
+  (>>=) (Node x t1 t2) f = bind $ f x
     where
-      -- Unpack function result to process children
-      go Nil = Nil
-      go (Node y t1' t2') =
-        Node y (t1' `orElse` (t1 >>= f)) (t2' `orElse` (t2 >>= f))
-      -- Determine which tree to use: choose first unless nil
-      orElse Nil t = t
-      orElse t _ = t
+      bind Nil = Nil
+      bind (Node y t1' t2') = Node y (merge t1' (t1 >>= f)) (merge t2' (t2 >>= f))
+      merge Nil t = t
+      merge t Nil = t
 
 -- | Build a tree from a foldable.
 mkTree :: (Foldable f) => (Ord a) => f a -> Tree a
@@ -141,3 +143,11 @@ flatten :: Tree a -> [a]
 flatten Nil = []
 flatten (Node x t1 t2) =
   [x] <> flatten t1 <> flatten t2
+
+{- | Determine the height of a tree, which is the number of edges on the longest path from the root
+   | to a leaf node.
+-}
+height :: Tree a -> Int
+height Nil = -1
+height (Node _ t1 t2) =
+  1 + max (height t1) (height t2)

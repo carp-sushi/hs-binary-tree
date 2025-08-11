@@ -36,3 +36,6 @@ main = do
 
   putStrLn "Tree x 2"
   print $ fmap (* 2) tree
+
+  putStrLn "Height of tree"
+  print $ height tree
